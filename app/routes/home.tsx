@@ -4,8 +4,8 @@ import Navbar from "components/Navbar";
 import Button from "components/ui/Button"
 import Upload from "components/Upload";
 import { useNavigate } from "react-router";
-import { useState } from "react";
-import { createProject } from "~/lib/puter.action";
+import { useEffect, useState } from "react";
+import { createProject, getProjects } from "~/lib/puter.action";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -47,6 +47,14 @@ export default function Home() {
 
     return true;
   }
+
+  useEffect(() => {
+    const fetchedProject = async () => {
+      const item = await getProjects();
+      setProjects(item);
+    }
+    fetchedProject();
+  },[])
 
   return (
     <div className="home">
@@ -104,7 +112,7 @@ export default function Home() {
 
           <div className="projects-grid">
             {projects.map(({id, name, renderedImage, sourceImage, timestamp, sharedBy}) => (
-              <div className="project-card group" key={id}>
+              <div className="project-card group" key={id} onClick={() => navigate(`/visualizer/${id}`)}>
               <div className="preview">
                 <img src={renderedImage || sourceImage}
                  alt="Dummy image" />
