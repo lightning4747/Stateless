@@ -4,6 +4,8 @@ import Navbar from "components/Navbar";
 import Button from "components/ui/Button"
 import Upload from "components/Upload";
 import { useNavigate } from "react-router";
+import { useState } from "react";
+import { createProject } from "~/lib/puter.action";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,10 +16,34 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const navigate = useNavigate();
+  const [projects, setProjects] = useState<DesignItem[]>([]);
 
   const handleUploadComplete = async (base64Image: string) => {
     const newId = Date.now().toString();
-    navigate(`/visualizer/${newId}`);
+    const name = `Residence ${newId}`;
+
+    const newItem = {
+      id: newId, name, sourceImage: base64Image,
+      renderedImage: undefined,
+      timestamp: Date.now()
+    }
+
+    const saved = await createProject({item: newItem, visibility:'private'});
+
+    if(!saved) {
+      console.error("Failed to create project");
+      return false;
+    }
+
+    setProjects((prev) => [saved, ...prev]);
+
+    navigate(`/visualizer/${newId}`, {
+      state: {
+        initialImage: saved.sourceImage,
+        initialRendered: saved.renderedImage || null,
+        name
+      }
+    });
 
     return true;
   }
@@ -77,9 +103,10 @@ export default function Home() {
           </div>
 
           <div className="projects-grid">
-            <div className="project-card group">
+            {projects.map(({id, name, renderedImage, sourceImage, timestamp, sharedBy}) => (
+              <div className="project-card group" key={id}>
               <div className="preview">
-                <img src="https://roomify-mlhuk267-dfwu1i.puter.site/projects/1770803585402/rendered.png"
+                <img src={renderedImage || sourceImage}
                  alt="Dummy image" />
 
                  <div className="badge">
@@ -88,12 +115,12 @@ export default function Home() {
               </div>
               <div className="card-body">
                 <div>
-                  <h3>Project beijing</h3>
+                  <h3>{name}</h3>
 
                   <div className="meta">
                     <Clock size={12} />
-                    <span>{new Date('2027-01-01').toLocaleDateString()}</span>
-                    <span>Lightning</span>
+                    <span>{new Date(timestamp).toLocaleDateString()}</span>
+                    <span>{sharedBy}</span>
                   </div>
                 </div>
                 <div className="arrow">
@@ -101,6 +128,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
+            ))}            
           </div>
         </div>
       </section>
