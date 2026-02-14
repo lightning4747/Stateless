@@ -1,10 +1,10 @@
-import { useNavigate, useOutletContext, useParams} from "react-router";
-import {useEffect, useRef, useState} from "react";
-import {generate3DView} from "../lib/ai.action";
-import {Zap, Download, RefreshCcw, Share2, X} from "lucide-react";
+import { useNavigate, useOutletContext, useParams } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { generate3DView } from "../lib/ai.action";
+import { Zap, Download, RefreshCcw, Share2, X } from "lucide-react";
 import Button from "../../components/ui/Button";
-import {createProject, getProjectById} from "../lib/puter.action";
-import {ReactCompareSlider, ReactCompareSliderImage} from "react-compare-slider";
+import { createProject, getProjectById } from "../lib/puter.action";
+import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
 
 const VisualizerId = () => {
     const { id } = useParams();
@@ -18,27 +18,53 @@ const VisualizerId = () => {
 
     const [isProcessing, setIsProcessing] = useState(false);
     const [currentImage, setCurrentImage] = useState<string | null>(null);
+    const [toast, setToast] = useState<string | null>(null);
+
+    const showToast = (message: string) => {
+        setToast(message);
+        setTimeout(() => setToast(null), 3000);
+    };
 
     const handleBack = () => navigate('/');
-    const handleExport = () => {
+    const handleExport = async () => {
         if (!currentImage) return;
 
-        const link = document.createElement('a');
-        link.href = currentImage;
-        link.download = `roomify-${id || 'design'}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        showToast("Starting download...");
+
+        try {
+            const response = await fetch(currentImage);
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `stateless-${id || 'design'}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error(e);
+            showToast("Download failed");
+        }
+    }
+
+    const handleShare = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            showToast("Link copied to clipboard!");
+        } catch (e) {
+            showToast("Failed to copy link");
+        }
     }
 
     const runGeneration = async (item: DesignItem) => {
-        if(!id || !item.sourceImage) return;
+        if (!id || !item.sourceImage) return;
 
         try {
             setIsProcessing(true);
             const result = await generate3DView({ sourceImage: item.sourceImage });
 
-            if(result.renderedImage) {
+            if (result.renderedImage) {
                 setCurrentImage(result.renderedImage);
 
                 const updatedItem = {
@@ -52,7 +78,7 @@ const VisualizerId = () => {
 
                 const saved = await createProject({ item: updatedItem, visibility: "private" })
 
-                if(saved) {
+                if (saved) {
                     setProject(saved);
                     setCurrentImage(saved.renderedImage || result.renderedImage);
                 }
@@ -141,14 +167,14 @@ const VisualizerId = () => {
                             >
                                 <Download className="w-4 h-4 mr-2" /> Export
                             </Button>
-                            <Button size="sm" onClick={() => {}} className="share">
+                            <Button size="sm" onClick={handleShare} className="share">
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Share
                             </Button>
                         </div>
                     </div>
 
-                    <div className={`render-area ${isProcessing ? 'is-processing': ''}`}>
+                    <div className={`render-area ${isProcessing ? 'is-processing' : ''}`}>
                         {currentImage ? (
                             <img src={currentImage} alt="AI Render" className="render-img" />
                         ) : (
@@ -184,13 +210,13 @@ const VisualizerId = () => {
                     <div className="compare-stage">
                         {project?.sourceImage && currentImage ? (
                             <ReactCompareSlider
-                                defaultValue={50}
+                                position={50}
                                 style={{ width: '100%', height: 'auto' }}
                                 itemOne={
                                     <ReactCompareSliderImage src={project?.sourceImage} alt="before" className="compare-img" />
                                 }
                                 itemTwo={
-                                    <ReactCompareSliderImage src={currentImage || project?.renderedImage} alt="after" className="compare-img" />
+                                    <ReactCompareSliderImage src={currentImage} alt="after" className="compare-img" />
                                 }
                             />
                         ) : (
@@ -203,6 +229,12 @@ const VisualizerId = () => {
                     </div>
                 </div>
             </section>
+
+            {toast && (
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-full shadow-xl text-sm font-medium z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    {toast}
+                </div>
+            )}
         </div>
     )
 }
