@@ -1,64 +1,74 @@
-import React from 'react'
-import {Box}from 'lucide-react'
-import { spawn } from 'child_process';
-import Button from './ui/Button'
+import {Box} from "lucide-react";
+import Button from "./ui/Button";
+import {useOutletContext} from "react-router";
 
 const Navbar = () => {
-  const signedin = true;
-  const greetings = ["hi", "helloo", "hiii", "bonjor", "welcome", "yo✌️"]
-  const usernames = ["lightning", "sekiro", "Arthur morgan", "Jojo"]
-  const randomIndex = Math.floor(Math.random() * usernames.length);
-  const randomGreeting = Math.floor(Math.random() * greetings.length);
-  const username = usernames[randomIndex];
-  const greeting = greetings[randomGreeting];
+    const { isSignedIn, userName, signIn, signOut } = useOutletContext<AuthContext>()
+    const greetings = ["hi", "helloo", "hi!", "bonjor", "welcome", "yo✌️"];
+    const randomGreeting = Math.floor(Math.random() * greetings.length);
+    const greeting = greetings[randomGreeting];
+    const handleAuthClick = async () => {
+        if(isSignedIn) {
+            try {
+                await signOut();
+            } catch (e) {
+                console.error(`Puter sign out failed: ${e}`);
+            }
 
-  async function handleAuthClick() {
-    throw new Error('Function not implemented.')
-  }
+            return;
+        }
 
-  return (
-    <header className='navbar'>
-      <nav className='inner'>
-        <div className='left'>
-          <div className='brand'>
-            <Box className="logo"/>
-            <span className='name'>
-              Stateless
-            </span>
-          </div>
+        try {
+            await signIn();
+        } catch (e) {
+            console.error(`Puter sign in failed: ${e}`);
+        }
+    };
 
-          <ul className='links'>
-              <a href="">Product</a>
-              <a href="">Pricing</a>
-              <a href="">Community</a>
-              <a href="">Enterprise</a>
-          </ul>
-        </div>
+    return (
+        <header className="navbar">
+            <nav className="inner">
+                <div className="left">
+                    <div className="brand">
+                        <Box  className="logo" />
 
-        <div className='actions'>
-        {signedin ? (
-          <>
-          <span className='greeting'>
-            {username ? `${greeting} ${username}` : `Signed in`}
-          </span>
-          <Button size='sm' onClick={handleAuthClick}>Log out</Button>
+                        <span className="name">
+                            Stateless
+                        </span>
+                    </div>
 
-          </>
-        ):(
-          <>          
-          <Button size='sm' variant="ghost" onClick={handleAuthClick}>
-            Login
-          </Button>
+                    <ul className="links">
+                        <a href="#">Product</a>
+                        <a href="#">Pricing</a>
+                        <a href="#">Community</a>
+                        <a href="#">Enterprise</a>
+                    </ul>
+                </div>
 
-          <a href="#uplaod" className='cta'>
-            Get Started
-          </a>
-          </>
-        )}
-        </div>
-      </nav>
-    </header>
-  )
+                <div className="actions">
+                    {isSignedIn ? (
+                        <>
+                            <span className="greeting">
+                                {userName ? `${greeting}, ${userName}` : 'Signed in'}
+                            </span>
+
+                            <Button size="sm" onClick={handleAuthClick} className="btn">
+                                Log Out
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button onClick={handleAuthClick} size="sm" variant="ghost">
+                                Log In
+                            </Button>
+
+                            <a href="#upload" className="cta">Get Started</a>
+                        </>
+                    )}
+                </div>
+            </nav>
+        </header>
+    )
 }
 
 export default Navbar

@@ -4,11 +4,11 @@ interface AuthState {
     userId: string | null
 }
 
-type authContext = {
+type AuthContext = {
     isSignedIn: boolean;
     userName: string | null,
     userId: string | null,
     refreshAuth: () => Promise<boolean>,
-    signout: () => Promise<boolean>,
+    signOut: () => Promise<boolean>,
     signIn: ()=> Promise<boolean>
 }
