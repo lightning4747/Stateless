@@ -13,11 +13,19 @@ const Upload = ({ onComplete }: UploadProps) => {
     const [file, setFile] = useState<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [progress, setProgress] = useState(0);
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const base64DataRef = useRef<string | null>(null);
 
+    const [hydrated, setHydrated] = useState(false);
     const { isSignedIn } = useOutletContext<AuthContext>();
+
+    useEffect(() => {
+        // This only runs on the client, after the first render
+        setHydrated(true);
+    }, []);
+
+    const isActuallyDisabled = hydrated ? !isSignedIn : false;
 
     useEffect(() => {
         return () => {
@@ -130,7 +138,7 @@ const Upload = ({ onComplete }: UploadProps) => {
                         type="file"
                         className="drop-input"
                         accept=".jpg,.jpeg,.png,.webp"
-                        disabled={!isSignedIn}
+                        disabled={isActuallyDisabled}
                         onChange={handleChange}
                     />
 
