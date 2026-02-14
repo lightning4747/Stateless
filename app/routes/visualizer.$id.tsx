@@ -49,11 +49,27 @@ const VisualizerId = () => {
     }
 
     const handleShare = async () => {
+        if (!project || !project.sourceImage) return;
+
+        showToast("Publishing to community...");
+
         try {
+            const updatedItem = {
+                ...project,
+                isPublic: true,
+            };
+
+            // Updates the remote state
+            await createProject({ item: updatedItem, visibility: "public" });
+
+            // Updates local state
+            setProject(updatedItem);
+
             await navigator.clipboard.writeText(window.location.href);
-            showToast("Link copied to clipboard!");
+            showToast("Shared to community & Link copied!");
         } catch (e) {
-            showToast("Failed to copy link");
+            console.error(e);
+            showToast("Failed to share project");
         }
     }
 

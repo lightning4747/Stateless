@@ -111,7 +111,7 @@ export default function Home() {
           </div>
 
           <div className="projects-grid">
-            {projects.map(({ id, name, renderedImage, sourceImage, timestamp, sharedBy }) => (
+            {projects.map(({ id, name, renderedImage, sourceImage, timestamp, sharedBy, isPublic }) => (
               <div
                 className="project-card group"
                 key={id}
@@ -129,9 +129,11 @@ export default function Home() {
                   <img src={renderedImage || sourceImage}
                     alt="Dummy image" />
 
-                  <div className="badge">
-                    <span>Community</span>
-                  </div>
+                  {isPublic && (
+                    <div className="badge">
+                      <span>Community</span>
+                    </div>
+                  )}
                 </div>
                 <div className="card-body">
                   <div>
