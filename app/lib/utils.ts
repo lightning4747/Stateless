@@ -5,7 +5,7 @@ export const isHostedUrl = (value: unknown): value is string =>
     typeof value === "string" && value.includes(HOSTING_DOMAIN_SUFFIX);
 
 export const createHostingSlug = () =>
-    `Stateless-${Date.now().toString(36)}-${Math.random()
+    `stateless-${Date.now().toString(36)}-${Math.random()
         .toString(36)
         .slice(2, 8)}`;
 
