@@ -14,7 +14,7 @@ import {
   getCurrentUser,
 signIn as puterSingin,
 signOut as puterSingout
-} from "lib/puter.action"
+} from "~/lib/puter.action"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -87,10 +87,11 @@ export default function App() {
   }
 
   return (
-  <main>
-    <Outlet />
+  <main className="min-h-screen bg-background text-foreground relative z-10">
+    <Outlet 
+        context={{...authState, refreshAuth, signIn, signOut}}
+    />
   </main>
-
   );
 }
 
