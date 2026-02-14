@@ -2,15 +2,26 @@ import { ArrowRight, ArrowUpRight, Clock, Layers } from "lucide-react";
 import type { Route } from "./+types/home";
 import Navbar from "components/Navbar";
 import Button from "components/ui/Button"
+import Upload from "components/Upload";
+import { useNavigate } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "New React Router App" },
     { name: "description", content: "Welcome to React Router!" },
   ];
-}
+};
 
 export default function Home() {
+  const navigate = useNavigate();
+
+  const handleUploadComplete = async (base64Image: string) => {
+    const newId = Date.now().toString();
+    navigate(`/visualizer/${newId}`);
+
+    return true;
+  }
+
   return (
     <div className="home">
       <Navbar/>
@@ -20,12 +31,12 @@ export default function Home() {
           <div className="dot">
             <div className="pulse"></div>
           </div>
-          <p>stateless architecture</p> {/*later come up smt good*/}
+          <p>Stateless architecture</p> {/*later come up smt good*/}
         </div>
           <h1>Architect your Thoughts with the power of AI</h1>
 
           <p className="subtitle">
-            Stateless is an desgining environment where AI can help you visualize, download and architect faster.
+            Stateless is a desgining environment where AI can help you visualize, download and architect faster.
           </p>
 
           <div className="actions">
@@ -47,10 +58,9 @@ export default function Home() {
                     <Layers className="icon" />
                   </div>
                   <h3>Upload your floor plan</h3>
-                  <p>Support JPG, PNG, formats up to 10MB</p>
+                  <p>Support JPG, PNG, formats up to 50 MB</p>
                 </div>
-                <p>upload image</p>
-
+                <Upload onComplete={handleUploadComplete}/>
               </div>
           </div>
       </section>
@@ -82,7 +92,7 @@ export default function Home() {
 
                   <div className="meta">
                     <Clock size={12} />
-                    <span>{new Date('01.01.20027').toLocaleDateString()}</span>
+                    <span>{new Date('2027-01-01').toLocaleDateString()}</span>
                     <span>Lightning</span>
                   </div>
                 </div>
