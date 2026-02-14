@@ -1,10 +1,26 @@
-import {Box} from "lucide-react";
+import {Zap} from "lucide-react";
 import Button from "./ui/Button";
 import {useOutletContext} from "react-router";
 
 const Navbar = () => {
     const { isSignedIn, userName, signIn, signOut } = useOutletContext<AuthContext>()
-    const greetings = ["hi", "helloo", "hi!", "bonjor", "welcome", "yo✌️"];
+    const greetings = [
+        "Hello",
+        "Hi!",
+        "Hey 👋",
+        "Greetings",
+        "Yo!",
+        "Welcome",
+        "Howdy 🤠",
+        "Alphas",
+        "Cheers 🍻",
+        "Namaste",
+        "Ciao!",
+        "Hola",
+        "Bonjour ✨",
+        "Sup?",
+        "Ahoy ⚓"
+      ];
     const randomGreeting = Math.floor(Math.random() * greetings.length);
     const greeting = greetings[randomGreeting];
     const handleAuthClick = async () => {
@@ -30,7 +46,7 @@ const Navbar = () => {
             <nav className="inner">
                 <div className="left">
                     <div className="brand">
-                        <Box  className="logo" />
+                        <Zap  className="logo" />
 
                         <span className="name">
                             Stateless
