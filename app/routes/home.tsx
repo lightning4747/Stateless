@@ -55,7 +55,45 @@ export default function Home() {
           </div>
       </section>
 
+      <section className="projects">
+        <div className="section-inner">
+          <div className="section-head">
+            <div className="copy">
+              <h2>Projects</h2>
+              <p>Your latest work and
+                 shared community projects, 
+                all in one place</p>
+            </div>
+          </div>
 
+          <div className="projects-grid">
+            <div className="project-card group">
+              <div className="preview">
+                <img src="https://roomify-mlhuk267-dfwu1i.puter.site/projects/1770803585402/rendered.png"
+                 alt="Dummy image" />
+
+                 <div className="badge">
+                  <span>Community</span>
+                 </div>
+              </div>
+              <div className="card-body">
+                <div>
+                  <h3>Project beijing</h3>
+
+                  <div className="meta">
+                    <Clock size={12} />
+                    <span>{new Date('01.01.20027').toLocaleDateString()}</span>
+                    <span>Lightning</span>
+                  </div>
+                </div>
+                <div className="arrow">
+                  <ArrowUpRight size={18}/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
   )
