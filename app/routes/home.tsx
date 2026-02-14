@@ -10,7 +10,7 @@ export function meta({}: Route.MetaArgs) {
     { title: "New React Router App" },
     { name: "description", content: "Welcome to React Router!" },
   ];
-}
+};
 
 export default function Home() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export default function Home() {
           <div className="dot">
             <div className="pulse"></div>
           </div>
-          <p>stateless architecture</p> {/*later come up smt good*/}
+          <p>Stateless architecture</p> {/*later come up smt good*/}
         </div>
           <h1>Architect your Thoughts with the power of AI</h1>
 
@@ -58,7 +58,7 @@ export default function Home() {
                     <Layers className="icon" />
                   </div>
                   <h3>Upload your floor plan</h3>
-                  <p>Support JPG, PNG, formats up to 10MB</p>
+                  <p>Support JPG, PNG, formats up to 50 MB</p>
                 </div>
                 <Upload onComplete={handleUploadComplete}/>
               </div>
@@ -92,7 +92,7 @@ export default function Home() {
 
                   <div className="meta">
                     <Clock size={12} />
-                    <span>{new Date('01.01.20027').toLocaleDateString()}</span>
+                    <span>{new Date('2027-01-01').toLocaleDateString()}</span>
                     <span>Lightning</span>
                   </div>
                 </div>

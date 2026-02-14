@@ -8,6 +8,8 @@ interface UploadProps {
 }
 
 const Upload = ({ onComplete }: UploadProps) => {
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
     const [file, setFile] = useState<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -81,8 +83,8 @@ const Upload = ({ onComplete }: UploadProps) => {
         if (!isSignedIn) return;
 
         const droppedFile = e.dataTransfer.files[0];
-        const allowedTypes = ['image/jpeg', 'image/png'];
-        if (droppedFile && allowedTypes.includes(droppedFile.type)) {
+
+        if (droppedFile && ALLOWED_TYPES.includes(droppedFile.type)) {
             processFile(droppedFile);
         }
     };
@@ -91,7 +93,7 @@ const Upload = ({ onComplete }: UploadProps) => {
         if (!isSignedIn) return;
 
         const selectedFile = e.target.files?.[0];
-        if (selectedFile) {
+        if (selectedFile && ALLOWED_TYPES.includes(selectedFile.type)) {
             processFile(selectedFile);
         }
     };
