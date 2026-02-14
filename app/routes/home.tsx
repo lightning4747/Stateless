@@ -2,6 +2,7 @@ import { ArrowRight, ArrowUpRight, Clock, Layers } from "lucide-react";
 import type { Route } from "./+types/home";
 import Navbar from "components/Navbar";
 import Button from "components/ui/Button"
+import Upload from "components/Upload";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -25,7 +26,7 @@ export default function Home() {
           <h1>Architect your Thoughts with the power of AI</h1>
 
           <p className="subtitle">
-            Stateless is an desgining environment where AI can help you visualize, download and architect faster.
+            Stateless is a desgining environment where AI can help you visualize, download and architect faster.
           </p>
 
           <div className="actions">
@@ -49,7 +50,9 @@ export default function Home() {
                   <h3>Upload your floor plan</h3>
                   <p>Support JPG, PNG, formats up to 10MB</p>
                 </div>
-                <p>upload image</p>
+                <Upload onComplete={(base64Data) => {
+                  console.log("Upload complete:", base64Data);
+                }} />
 
               </div>
           </div>
