@@ -1,6 +1,6 @@
-import {Zap} from "lucide-react";
+import { Zap } from "lucide-react";
 import Button from "./ui/Button";
-import {useOutletContext} from "react-router";
+import { useOutletContext, Link } from "react-router";
 
 const Navbar = () => {
     const { isSignedIn, userName, signIn, signOut } = useOutletContext<AuthContext>()
@@ -20,11 +20,11 @@ const Navbar = () => {
         "Bonjour ✨",
         "Sup?",
         "Ahoy ⚓"
-      ];
+    ];
     const randomGreeting = Math.floor(Math.random() * greetings.length);
     const greeting = greetings[randomGreeting];
     const handleAuthClick = async () => {
-        if(isSignedIn) {
+        if (isSignedIn) {
             try {
                 await signOut();
             } catch (e) {
@@ -46,7 +46,7 @@ const Navbar = () => {
             <nav className="inner">
                 <div className="left">
                     <div className="brand">
-                        <Zap  className="logo" />
+                        <Zap className="logo" />
 
                         <span className="name">
                             Stateless
@@ -56,7 +56,7 @@ const Navbar = () => {
                     <ul className="links">
                         <a href="#">Product</a>
                         <a href="#">Pricing</a>
-                        <a href="#">Community</a>
+                        <Link to="/community">Community</Link>
                         <a href="#">Enterprise</a>
                     </ul>
                 </div>
