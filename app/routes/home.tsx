@@ -6,6 +6,7 @@ import Upload from "components/Upload";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { createProject, getProjects } from "~/lib/puter.action";
+import ScrollReveal from "components/ScrollReveal";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -61,98 +62,111 @@ export default function Home() {
       <Navbar />
 
       <section className="hero">
-        <div className="announce">
-          <div className="dot">
-            <div className="pulse"></div>
-          </div>
-          <p>Stateless architecture</p> {/*later come up smt good*/}
-        </div>
-        <h1>Architect your Thoughts with the power of AI</h1>
-
-        <p className="subtitle">
-          Stateless is a desgining environment where AI can help you visualize, download and architect faster.
-        </p>
-
-        <div className="actions">
-          <a href="#upload" className="cta">
-            Start Building <ArrowRight className="icon" />
-          </a>
-
-          <Button
-            variant="outline"
-            size="lg"
-            className="demo">Watch Demo</Button>
-        </div>
-
-        <div id="upload" className="upload-shell">
-          <div className="grid-overlay" />
-          <div className="upload-card">
-            <div className="upload-head">
-              <div className="upload-icon">
-                <Layers className="icon" />
-              </div>
-              <h3>Upload your floor plan</h3>
-              <p>Support JPG, PNG, formats up to 50 MB</p>
+        <ScrollReveal>
+          <div className="announce">
+            <div className="dot">
+              <div className="pulse"></div>
             </div>
-            <Upload onComplete={handleUploadComplete} />
+            <p>Stateless architecture</p> {/*later come up smt good*/}
           </div>
-        </div>
+        </ScrollReveal>
+
+        <ScrollReveal className="delay-100">
+          <h1>Architect your Thoughts with the power of AI</h1>
+        </ScrollReveal>
+
+        <ScrollReveal className="delay-200">
+          <p className="subtitle">
+            Stateless is a desgining environment where AI can help you visualize, download and architect faster.
+          </p>
+        </ScrollReveal>
+
+        <ScrollReveal className="delay-300">
+          <div className="actions">
+            <a href="#upload" className="cta">
+              Start Building <ArrowRight className="icon" />
+            </a>
+
+            <Button
+              variant="outline"
+              size="lg"
+              className="demo">Watch Demo</Button>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal className="delay-500 w-full flex justify-center mt-12">
+          <div id="upload" className="upload-shell">
+            <div className="grid-overlay" />
+            <div className="upload-card">
+              <div className="upload-head">
+                <div className="upload-icon">
+                  <Layers className="icon" />
+                </div>
+                <h3>Upload your floor plan</h3>
+                <p>Support JPG, PNG, formats up to 50 MB</p>
+              </div>
+              <Upload onComplete={handleUploadComplete} />
+            </div>
+          </div>
+        </ScrollReveal>
       </section>
 
       <section className="projects">
-        <div className="section-inner">
-          <div className="section-head">
-            <div className="copy">
-              <h2>Projects</h2>
-              <p>Your latest work and
-                shared community projects,
-                all in one place</p>
+        <ScrollReveal className="w-full">
+          <div className="section-inner">
+            <div className="section-head">
+              <div className="copy">
+                <h2>Projects</h2>
+                <p>Your latest work and
+                  shared community projects,
+                  all in one place</p>
+              </div>
+            </div>
+
+            <div className="projects-grid">
+              {projects.map(({ id, name, renderedImage, sourceImage, timestamp, sharedBy, isPublic }) => (
+                <div
+                  className="project-card group"
+                  key={id}
+                  onClick={() => navigate(`/visualizer/${id}`)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/visualizer/${id}`);
+                    }
+                  }}
+                >
+                  <div className="preview">
+                    <img src={renderedImage || sourceImage}
+                      alt="Dummy image" />
+
+                    {isPublic && (
+                      <div className="badge">
+                        <span>Community</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="card-body">
+                    <div>
+                      <h3>{name}</h3>
+
+                      <div className="meta">
+                        <Clock size={12} />
+                        <span>{new Date(timestamp).toLocaleDateString()}</span>
+                        <span>{sharedBy}</span>
+                      </div>
+                    </div>
+                    <div className="arrow">
+                      <ArrowUpRight size={18} />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-
-          <div className="projects-grid">
-            {projects.map(({ id, name, renderedImage, sourceImage, timestamp, sharedBy, isPublic }) => (
-              <div
-                className="project-card group"
-                key={id}
-                onClick={() => navigate(`/visualizer/${id}`)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    navigate(`/visualizer/${id}`);
-                  }
-                }}
-              >
-                <div className="preview">
-                  <img src={renderedImage || sourceImage}
-                    alt="Dummy image" />
-
-                  {isPublic && (
-                    <div className="badge">
-                      <span>Community</span>
-                    </div>
-                  )}
-                </div>
-                <div className="card-body">
-                  <div>
-                    <h3>{name}</h3>
-
-                    <div className="meta">
-                      <Clock size={12} />
-                      <span>{new Date(timestamp).toLocaleDateString()}</span>
-                      <span>{sharedBy}</span>
-                    </div>
-                  </div>
-                  <div className="arrow">
-                    <ArrowUpRight size={18} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        </ScrollReveal>
       </section>
     </div>
 
