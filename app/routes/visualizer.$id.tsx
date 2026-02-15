@@ -1,9 +1,9 @@
 import { useNavigate, useOutletContext, useParams } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { generate3DView } from "../lib/ai.action";
-import { Zap, Download, RefreshCcw, Share2, X } from "lucide-react";
+import { Zap, Download, RefreshCcw, Share2, X, Trash, Lock } from "lucide-react";
 import Button from "../../components/ui/Button";
-import { createProject, getProjectById } from "../lib/puter.action";
+import { createProject, getProjectById, deleteProject } from "../lib/puter.action";
 import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
 
 const VisualizerId = () => {
@@ -48,28 +48,47 @@ const VisualizerId = () => {
         }
     }
 
-    const handleShare = async () => {
-        if (!project || !project.sourceImage) return;
+    const handleToggleVisibility = async () => {
+        if (!project) return;
 
-        showToast("Publishing to community...");
+        const newIsPublic = !project.isPublic;
+        const visibility = newIsPublic ? 'public' : 'private';
+
+        showToast(newIsPublic ? "Publishing..." : "Making private...");
 
         try {
-            const updatedItem = {
-                ...project,
-                isPublic: true,
-            };
+            const updatedItem = { ...project, isPublic: newIsPublic };
 
-            // Updates the remote state
-            await createProject({ item: updatedItem, visibility: "public" });
+            const saved = await createProject({ item: updatedItem, visibility });
 
-            // Updates local state
-            setProject(updatedItem);
-
-            await navigator.clipboard.writeText(window.location.href);
-            showToast("Shared to community & Link copied!");
+            if (saved) {
+                setProject(saved);
+                if (newIsPublic) {
+                    await navigator.clipboard.writeText(window.location.href);
+                    showToast("Shared & Link copied!");
+                } else {
+                    showToast("Project is now private");
+                }
+            } else {
+                showToast("Update failed");
+            }
         } catch (e) {
             console.error(e);
-            showToast("Failed to share project");
+            showToast("Failed to update project");
+        }
+    }
+
+    const handleDelete = async () => {
+        if (!id || !confirm("Are you sure? This cannot be undone.")) return;
+
+        showToast("Deleting project...");
+        const success = await deleteProject({ id });
+
+        if (success) {
+            showToast("Project deleted");
+            navigate('/');
+        } else {
+            showToast("Deletion failed");
         }
     }
 
@@ -183,9 +202,32 @@ const VisualizerId = () => {
                             >
                                 <Download className="w-4 h-4 mr-2" /> Export
                             </Button>
-                            <Button size="sm" onClick={handleShare} className="share">
-                                <Share2 className="w-4 h-4 mr-2" />
-                                Share
+
+                            <Button
+                                size="sm"
+                                onClick={handleToggleVisibility}
+                                className={project?.isPublic ? "bg-red-500 hover:bg-red-600 text-white" : "share"}
+                            >
+                                {project?.isPublic ? (
+                                    <>
+                                        <Lock className="w-4 h-4 mr-2" />
+                                        Make Private
+                                    </>
+                                ) : (
+                                    <>
+                                        <Share2 className="w-4 h-4 mr-2" />
+                                        Share
+                                    </>
+                                )}
+                            </Button>
+
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                                onClick={handleDelete}
+                            >
+                                <Trash className="w-4 h-4" />
                             </Button>
                         </div>
                     </div>
