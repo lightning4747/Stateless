@@ -4,4 +4,5 @@ export default [
     index("routes/home.tsx"),
     route("visualizer/:id", "routes/visualizer.$id.tsx"),
     route("community", "routes/community.tsx"),
+    route("construction", "routes/construction.tsx"),
 ] satisfies RouteConfig;

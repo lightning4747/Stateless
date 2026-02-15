@@ -45,19 +45,21 @@ const Navbar = () => {
         <header className="navbar">
             <nav className="inner">
                 <div className="left">
-                    <div className="brand">
-                        <Zap className="logo" />
+                    <Link to="/">
+                        <div className="brand">
+                            <Zap className="logo" />
 
-                        <span className="name">
-                            Stateless
-                        </span>
-                    </div>
+                            <span className="name">
+                                Stateless
+                            </span>
+                        </div>
+                    </Link>
 
                     <ul className="links">
-                        <a href="#">Product</a>
-                        <a href="#">Pricing</a>
+                        <Link to="/construction">Product</Link>
+                        <Link to="/construction">Pricing</Link>
                         <Link to="/community">Community</Link>
-                        <a href="#">Enterprise</a>
+                        <Link to="/construction">Enterprise</Link>
                     </ul>
                 </div>
 
