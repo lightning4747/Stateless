@@ -15,69 +15,35 @@ export const getCurrentUser = async () => {
     }
 }
 
-export const createProject = async ({ item, visibility = "private" }: CreateProjectParams): Promise<DesignItem | null | undefined> => {
-    if (!PUTER_WORKER_URL) {
-        console.warn('Missing VITE_PUTER_WORKER_URL; skip history fetch;');
-        return null;
-    }
-    const projectId = item.id;
-
-    const hosting = await getOrCreateHostingConfig();
-
-    const hostedSource = projectId ?
-        await uploadImageToHosting({ hosting, url: item.sourceImage, projectId, label: 'source', }) : null;
-
-    const hostedRender = projectId && item.renderedImage ?
-        await uploadImageToHosting({ hosting, url: item.renderedImage, projectId, label: 'rendered', }) : null;
-
-    const resolvedSource = hostedSource?.url || (isHostedUrl(item.sourceImage)
-        ? item.sourceImage
-        : ''
-    );
-
-    if (!resolvedSource) {
-        console.warn('Failed to host source image, skipping save.')
-        return null;
-    }
-
-    const resolvedRender = hostedRender?.url
-        ? hostedRender?.url
-        : item.renderedImage && isHostedUrl(item.renderedImage)
-            ? item.renderedImage
-            : undefined;
-
-    const {
-        sourcePath: _sourcePath,
-        renderedPath: _renderedPath,
-        publicPath: _publicPath,
-        ...rest
-    } = item;
-
-    const payload = {
-        ...rest,
-        sourceImage: resolvedSource,
-        renderedImage: resolvedRender,
-    }
-
+export const createProject = async ({ item, visibility }: { item: any, visibility?: string }) => {
+    if (!PUTER_WORKER_URL) return null;
+    
     try {
-        const response = await puter.workers.exec(`${PUTER_WORKER_URL}/api/projects/save`, {
-            method: 'POST',
-            body: JSON.stringify({
-                project: payload,
-                visibility
-            })
-        });
+        // We concatenate the route to the base URL, just like the working delete/get functions
+        const response = await puter.workers.exec(
+            `${PUTER_WORKER_URL}/api/projects/save`, 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    project: item, 
+                    visibility 
+                })
+            }
+        );
 
         if (!response.ok) {
-            console.error('failed to save the project', await response.text());
+            const errorText = await response.text();
+            console.error("Save failed:", response.status, errorText);
             return null;
         }
 
-        const data = (await response.json()) as { project?: DesignItem | null }
-
+        const data = await response.json();
         return data?.project ?? null;
     } catch (e) {
-        console.log('Failed to save project', e)
+        console.error("Create/Save call failed:", e);
         return null;
     }
 }
@@ -138,3 +104,34 @@ export const getProjectById = async ({ id }: { id: string }) => {
         return null;
     }
 };
+
+export const deleteProject = async ({ id }: { id: string }) => {
+    if (!PUTER_WORKER_URL) return false;
+    
+    try {
+        // We use the full URL + options, just like your working GET method
+        // but specifying the POST method and body.
+        const response = await puter.workers.exec(
+            `${PUTER_WORKER_URL}/api/projects/delete`, 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id })
+            }
+        );
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.deleted === true;
+        }
+        
+        const errorText = await response.text();
+        console.error("Delete failed with status:", response.status, errorText);
+        return false;
+    } catch (e) {
+        console.error("Delete call failed:", e);
+        return false;
+    }
+}
